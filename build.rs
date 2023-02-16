@@ -5,9 +5,9 @@ const METAL_OUT: &str = "src/metal/dot_product.metallib";
 
 fn main() {
     Command::new("xcrun")
-        .args(&["-sdk", "macosx", "metal"])
-        .args(&[METAL_IN])
-        .args(&["-o", METAL_OUT])
+        .args(["-sdk", "macosx", "metal"])
+        .args([METAL_IN])
+        .args(["-o", METAL_OUT])
         .status()
         .expect("Failed to execute xcrun");
 
