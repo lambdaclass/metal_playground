@@ -32,16 +32,10 @@ fn main() {
     let size = length * core::mem::size_of::<i32>() as u64;
     assert_eq!(v.len(), w.len());
 
-    let buffer_a = device.new_buffer_with_data(
-        void_ptr(&v),
-        size,
-        MTLResourceOptions::StorageModeShared,
-    );
-    let buffer_b = device.new_buffer_with_data(
-        void_ptr(&w),
-        size,
-        MTLResourceOptions::StorageModeShared,
-    );
+    let buffer_a =
+        device.new_buffer_with_data(void_ptr(&v), size, MTLResourceOptions::StorageModeShared);
+    let buffer_b =
+        device.new_buffer_with_data(void_ptr(&w), size, MTLResourceOptions::StorageModeShared);
     let buffer_result = device.new_buffer(
         size, // the operation will return an array with the same size.
         MTLResourceOptions::StorageModeShared,
@@ -54,7 +48,11 @@ fn main() {
     // to write commands into a buffer an encoder is needed, in our case a compute encoder.
     let compute_encoder = command_buffer.new_compute_command_encoder();
     compute_encoder.set_compute_pipeline_state(&pipeline);
-    compute_encoder.set_buffers(0, &[Some(&buffer_a), Some(&buffer_b), Some(&buffer_result)], &[0; 3]);
+    compute_encoder.set_buffers(
+        0,
+        &[Some(&buffer_a), Some(&buffer_b), Some(&buffer_result)],
+        &[0; 3],
+    );
 
     // specify thread count and organization
     let grid_size = metal::MTLSize::new(length, 1, 1);
@@ -68,7 +66,9 @@ fn main() {
     command_buffer.wait_until_completed();
 
     let result: *const [i32; 4] = deref_void_ptr(buffer_result.contents());
-    unsafe { println!("{:?}", *result); }
+    unsafe {
+        println!("{:?}", *result);
+    }
 }
 
 // stolen from ministark
