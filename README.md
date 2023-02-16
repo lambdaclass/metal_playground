@@ -19,6 +19,6 @@ To run the example, use the following command:
 This command will automatically build the metal related code to generate the `.metallib` file that the rust app use.
 
 ## References
-[Apple's Metal documentation](https://developer.apple.com/documentation/metal): we recommend to start with "Performing Calculations on a GPU". Note that these docs are in Swift/Obj-C.
-[miniSTARK](https://github.com/andrewmilson/ministark): A minimal STARK library built in Rust and gpu-accelerated with Metal.
-[metal-rs examples](https://github.com/gfx-rs/metal-rs): 
+- [Apple's Metal documentation](https://developer.apple.com/documentation/metal): we recommend to start with "Performing Calculations on a GPU". Note that these docs are in Swift/Obj-C.
+- [miniSTARK](https://github.com/andrewmilson/ministark): A minimal STARK library built in Rust and gpu-accelerated with Metal.
+- [metal-rs examples](https://github.com/gfx-rs/metal-rs)
