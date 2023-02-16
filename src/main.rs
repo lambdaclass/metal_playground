@@ -1,14 +1,11 @@
 use metal::{Device, DeviceRef, MTLResourceOptions};
 use std::{fs, rc::Rc};
 
-// includes the dot_product() kernel
-const LIB_DATA: &[u8] = include_bytes!("metal/dot_product.metallib");
-
 fn main() {
     // the system will assign a GPU to use.
     let device: &DeviceRef = &Device::system_default().expect("No device found");
 
-    let lib_file = fs::read("metal/dot_product.metallib").unwrap();
+    let lib_file = fs::read("src/metal/dot_product.metallib").unwrap();
     // represents the library which contains the kernel.
     let lib = device.new_library_with_data(&lib_file[..]).unwrap();
 
