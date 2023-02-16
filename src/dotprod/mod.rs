@@ -3,14 +3,15 @@ use std::{fs, rc::Rc};
 
 use crate::util;
 
-pub fn dot(v: &[u32], w: &[u32]) -> *const [u32; 4] { // will return a raw pointer to the result
+const LIB_DATA: &[u8] = include_bytes!("metal/dot_product.metallib");
+
+pub fn dot(v: [u32; 4], w: [u32; 4]) -> *const [u32; 4] {
+    // will return a raw pointer to the result
     // the system will assign a GPU to use.
     let device: &DeviceRef = &Device::system_default().expect("No device found");
 
-    let lib_file = fs::read("metal/dot_product.metallib").unwrap();
     // represents the library which contains the kernel.
-    let lib = device.new_library_with_data(&lib_file[..]).unwrap();
-
+    let lib = device.new_library_with_data(LIB_DATA).unwrap();
     // create function pipeline.
     // this compiles the function, so a pipline can't be created in performance sensitive code.
     let function = lib.get_function("dot_product", None).unwrap();
