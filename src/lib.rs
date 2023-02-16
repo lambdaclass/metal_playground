@@ -1,2 +1,1 @@
-pub mod dotprod;
-pub mod util;
+pub mod utils;

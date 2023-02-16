@@ -5,5 +5,8 @@ edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[[example]]
+name = "dotprod"
+
 [dependencies]
 metal = "0.24.0"

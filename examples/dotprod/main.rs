@@ -1,7 +1,5 @@
 use metal::{Device, DeviceRef, MTLResourceOptions};
-use std::{fs, rc::Rc};
-
-use crate::util;
+use metal_playground::utils;
 
 const LIB_DATA: &[u8] = include_bytes!("metal/dot_product.metallib");
 
@@ -25,12 +23,12 @@ pub fn dot(v: [u32; 4], w: [u32; 4]) -> *const [u32; 4] {
     assert_eq!(v.len(), w.len());
 
     let buffer_a = device.new_buffer_with_data(
-        util::void_ptr(&v),
+        utils::void_ptr(&v),
         size,
         MTLResourceOptions::StorageModeShared,
     );
     let buffer_b = device.new_buffer_with_data(
-        util::void_ptr(&w),
+        utils::void_ptr(&w),
         size,
         MTLResourceOptions::StorageModeShared,
     );
@@ -40,7 +38,7 @@ pub fn dot(v: [u32; 4], w: [u32; 4]) -> *const [u32; 4] {
     );
 
     // a command queue for sending instructions to the device.
-    let command_queue = Rc::new(device.new_command_queue());
+    let command_queue = device.new_command_queue();
     // for sending commands, a command buffer is needed.
     let command_buffer = command_queue.new_command_buffer();
     // to write commands into a buffer an encoder is needed, in our case a compute encoder.
@@ -63,5 +61,10 @@ pub fn dot(v: [u32; 4], w: [u32; 4]) -> *const [u32; 4] {
 
     command_buffer.wait_until_completed();
 
-    util::deref_void_ptr(buffer_result.contents())
+    utils::deref_void_ptr(buffer_result.contents())
+}
+
+fn main() {
+    let result = dot([3_u32, 4, 1, 7], [2_u32, 5, 6, 9]);
+    unsafe { println!("{:?}", *result) }
 }

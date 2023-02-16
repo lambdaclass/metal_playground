@@ -1,7 +1,7 @@
 use std::process::Command;
 
-const METAL_IN: &str = "src/metal/dot_product.metal";
-const METAL_OUT: &str = "src/metal/dot_product.metallib";
+const METAL_IN: &str = "examples/dotprod/metal/dot_product.metal";
+const METAL_OUT: &str = "examples/dotprod/metal/dot_product.metallib";
 
 fn main() {
     Command::new("xcrun")
