@@ -2,7 +2,7 @@ use metal::{Device, DeviceRef, MTLResourceOptions};
 use std::rc::Rc;
 
 // includes the dot_product() kernel
-const LIB_DATA: &[u8] = include_bytes!("metal/dot_product.metal");
+const LIB_DATA: &[u8] = include_bytes!("metal/dot_product.metallib");
 
 fn main() {
     // the system will assign a GPU to use.
