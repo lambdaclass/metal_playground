@@ -14,9 +14,9 @@ The source code will contain documented examples of use, growing in complexity, 
 
 To run the example, use the following command: 
 
-`cargo run --release`
+`cargo run --example dotprod`
 
-This command will automatically build the metal related code to generate the `.metallib` file that the rust app use.
+This command will automatically build the metal related code to generate the `.metallib` file that the rust app uses.
 
 ## References
 - [Apple's Metal documentation](https://developer.apple.com/documentation/metal): we recommend to start with "Performing Calculations on a GPU". Note that these docs are in Swift/Obj-C.
