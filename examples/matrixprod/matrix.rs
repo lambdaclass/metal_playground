@@ -1,15 +1,19 @@
-use std::ops::{Add, Mul, Index};
 use num_traits::Zero;
+use std::ops::{Add, Index, Mul};
 
-pub struct Matrix<T: Add + Mul + Zero> {
-    entries: Vec<T>,
+pub struct Matrix<T: Add + Mul + Zero + Copy> {
+    pub entries: Vec<T>,
     rows: usize,
     cols: usize,
 }
 
-impl<T: Add + Mul + Zero> Matrix<T> {
+impl<T: Add + Mul + Zero + Copy> Matrix<T> {
     pub fn new(rows: usize, cols: usize, entries: Vec<T>) -> Self {
-        assert_eq!(entries.len(), rows * cols, "Tried to create a matrix with the wrong number of entries.");
+        assert_eq!(
+            entries.len(),
+            rows * cols,
+            "Tried to create a matrix with the wrong number of entries."
+        );
 
         Matrix {
             entries,
@@ -23,7 +27,7 @@ impl<T: Add + Mul + Zero> Matrix<T> {
     }
 }
 
-impl<T: Add + Mul + Zero> Index<(usize, usize)> for Matrix<T> {
+impl<T: Add + Mul + Zero + Copy> Index<(usize, usize)> for Matrix<T> {
     type Output = T;
 
     fn index(&self, index: (usize, usize)) -> &Self::Output {
@@ -34,7 +38,7 @@ impl<T: Add + Mul + Zero> Index<(usize, usize)> for Matrix<T> {
     }
 }
 
-impl<T: Add + Mul<Output = T> + Zero> Mul for Matrix<T> {
+impl<T: Add + Mul<Output = T> + Zero + Copy> Mul for Matrix<T> {
     type Output = Self;
 
     fn mul(self, rhs: Self) -> Self::Output {
@@ -46,7 +50,7 @@ impl<T: Add + Mul<Output = T> + Zero> Mul for Matrix<T> {
         let size = rows * cols;
 
         let mut entries = Vec::with_capacity(size);
-        
+
         for idx in 0..size {
             let i = idx / rows;
             let j = idx % cols;
@@ -63,5 +67,20 @@ impl<T: Add + Mul<Output = T> + Zero> Mul for Matrix<T> {
             cols,
             entries,
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_matrix_multiplication() {
+        let matrix = Matrix::new(2, 2, vec![3, 1, 5, 2]);
+        let inverse_matrix = Matrix::new(2, 2, vec![2, -1, -5, 3]);
+
+        let result = matrix * inverse_matrix;
+
+        assert_eq!(result.entries, vec![1, 0, 0, 1]);
     }
 }
