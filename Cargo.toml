@@ -10,3 +10,4 @@ name = "dotprod"
 
 [dependencies]
 metal = "0.24.0"
+num-traits = "0.2.15"
