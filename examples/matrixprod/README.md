@@ -14,6 +14,8 @@ A matrix can be divided into multiple blocks, and operations between matrices ca
 
 A matrix can be divided multiple times until only 2x2 blocks remain (this is why a size of *2^n* was selected), which are the easiest to sum and multiply. This means that our problem can be divided in simpler sub-problems in a recursive way!
 
+**But why is it needed to divide into block matrices instead of just operating with the individual entries?** I wanted this example to be as complete as possible, dividing into 2x2 matrices gives me a reason to use some of Metal's SIMD functions so I can force myself to learn about this. Also the recursive nature of the problem makes it similar to FFT. But yeah, I think all this can be made conceptually simpler by thrashing the divide-and-conquer idea, performance-wise I'm not sure which is better.
+
 ## Now in Metal
 
 Work can be submitted to the GPU by a **command queue**, which hold **command buffers** each containing specific instructions that we want the device to execute. Command buffers can be written on using **command encoders**.
