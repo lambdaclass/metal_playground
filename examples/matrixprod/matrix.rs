@@ -3,7 +3,7 @@ use std::ops::{Add, Index, Mul};
 
 #[derive(Clone, Debug)]
 pub struct Matrix<T> {
-    pub entries: Vec<T>, // row-major order, so entries[..cols-1] would be first row and so on.
+    pub entries: Vec<T>, // row-major order
     pub rows: usize,
     pub cols: usize,
 }
@@ -27,47 +27,8 @@ impl<T: Copy> Matrix<T> {
         self.rows == self.cols
     }
 
-    /// Divides matrix into 4 square blocks with indices:
-    /// [[0], [1]]
-    /// [[2], [3]]
-    /// Requires the matrix to be square and even-sized, with a minimum size of 4.
-    pub fn get_blocks(&self) -> [Matrix<T>; 4] {
-        assert!(self.is_square());
-
-        let size = self.rows;
-        assert_eq!(size % 2, 0);
-        assert!(size >= 4);
-
-        // each chunk represents a block's row, like this:
-        // [ [...], [...], ] ^
-        // [ [...], [...], ] |
-        // [   .      .    ] |
-        // [   .      .    ] | n
-        // [   .  ,   .  , ] |
-        // [ [...], [...], ] |
-        // [ [...], [...], ] \
-        //   <--->  <--->
-        //    n/2    n/2
-        // where n = size.
-        let select_block = |offset: usize| -> Vec<T> {
-            self.entries
-                .chunks(size / 2)
-                .skip(offset)
-                .step_by(2)
-                .take(size / 2)
-                .flatten()
-                .copied()
-                .collect()
-        };
-
-        // these starting offsets were obtained by tinkering with the previous diagram on paper.
-        let blocks = [0, 1, size, size + 1].map(|offset| select_block(offset));
-
-        blocks.map(|entries| Matrix {
-            entries,
-            rows: size / 2,
-            cols: size / 2,
-        })
+    pub fn sizeof_entries(&self) -> u64 {
+        (self.entries.len() * core::mem::size_of::<T>()) as u64
     }
 }
 
@@ -129,26 +90,5 @@ mod tests {
         let result = matrix * inverse_matrix;
 
         assert_eq!(result.entries, vec![1, 0, 0, 1]);
-    }
-
-    #[test]
-    fn test_get_blocks() {
-        let matrix = Matrix::new(4, 4, &[1, 2,   3,  4,
-                                         5, 6,   7,  8,
-                                         9, 10,  11, 12,
-                                         13, 14, 15, 16]);
-
-        let blocks = matrix.get_blocks();
-        assert_eq!(blocks[0].entries, vec![1, 2,
-                                           5, 6]);
-
-        assert_eq!(blocks[1].entries, vec![3, 4,
-                                           7, 8]);
-
-        assert_eq!(blocks[2].entries, vec![9,  10,
-                                           13, 14]);
-
-        assert_eq!(blocks[3].entries, vec![11, 12,
-                                           15, 16]);
     }
 }
