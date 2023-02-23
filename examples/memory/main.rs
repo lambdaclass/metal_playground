@@ -1,4 +1,9 @@
+#![feature(allocator_api)]
 use metal::{ComputePipelineDescriptor, Device, DeviceRef, MTLResourceOptions, MTLResourceUsage};
+
+use crate::alloc::PageAlignedAllocator;
+
+pub mod alloc;
 
 const LIB_DATA: &[u8] = include_bytes!("metal/memory.metallib");
 
@@ -16,11 +21,14 @@ fn main() {
         )
         .unwrap();
 
-    let mut data = vec![0_u32; 16];
+    let mut data = [0_u32; 16].to_vec_in(PageAlignedAllocator);
+    let data_size = (data.len() * core::mem::size_of::<u32>()) as u64;
 
-    let buffer = device.new_buffer_with_bytes_no_copy(
-        data.as_mut_ptr() as *mut core::ffi::c_void,
-        (data.capacity() * core::mem::size_of::<u32>()) as u64,
+    let ptr = data.as_mut_ptr();
+    let buffer = device.new_buffer_with_bytes_no_copy( // for some reason this creates a buffer
+                                                       // with a null ptr.
+        ptr as *mut core::ffi::c_void,
+        data_size,
         MTLResourceOptions::StorageModeShared,
         None,
     );
@@ -29,21 +37,22 @@ fn main() {
     let command_buffer = command_queue.new_command_buffer();
     let compute_encoder = command_buffer.new_compute_command_encoder();
     compute_encoder.set_compute_pipeline_state(&pipeline);
-    compute_encoder.set_buffer(0, Some(&buffer), 0);
+    compute_encoder.set_buffer(0, Some(&buffer), 0); // code panics here, the first call which
+                                                     // takes buffer as arg.
 
     compute_encoder.use_resource(&buffer, MTLResourceUsage::Write);
 
-    // specify thread count and organization
-    let grid_size = metal::MTLSize::new(data.capacity() as u64, 1, 1);
-    let threadgroup_size = metal::MTLSize::new(data.capacity() as u64, 1, 1);
+    let grid_size = metal::MTLSize::new(data.len() as u64, 1, 1);
+    let threadgroup_size = metal::MTLSize::new(data.len() as u64, 1, 1);
 
     compute_encoder.dispatch_threads(grid_size, threadgroup_size);
     compute_encoder.end_encoding();
+
     command_buffer.commit();
     command_buffer.wait_until_completed();
 
     unsafe {
-        println!("{:?}", *(buffer.contents() as *mut [u32; 16])); 
+        println!("via contents(): {:?}", *(buffer.contents() as *mut [u32; 16]));
     }
-    println!("{:?}", data);
+    println!("rust vector: {:?}", data);
 }
