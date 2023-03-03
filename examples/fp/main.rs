@@ -12,7 +12,7 @@ pub fn mul(a: u32, b: u32) -> u32 {
     let lib = device.new_library_with_data(LIB_DATA).unwrap();
     // create function pipeline.
     // this compiles the function, so a pipline can't be created in performance sensitive code.
-    let function = lib.get_function("ops", None).unwrap();
+    let function = lib.get_function("mul", None).unwrap();
     let pipeline = lib
         .device()
         .new_compute_pipeline_state_with_function(&function)
