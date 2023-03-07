@@ -35,12 +35,18 @@
 ///
 /// The Fp class wraps all the standard arithmatic operations to make the finite field elements look
 /// basically like ordinary numbers (which they mostly are).
+
+template <
+    /* P **/ uint32_t P,
+    /* M **/ uint32_t M,
+    /* R2 **/ uint32_t R2
+    >
 class Fp {
 public:
   /// The value of P, the modulus of Fp.
-  static constant uint32_t P = 15 * (uint32_t(1) << 27) + 1;
-  static constant uint32_t M = 0x88000001;
-  static constant uint32_t R2 = 1172168163;
+  // static constant uint32_t P = 15 * (uint32_t(1) << 27) + 1;
+  // static constant uint32_t M = 0x88000001;
+  // static constant uint32_t R2 = 1172168163;
 
 private:
   // The actual value, always < P.
@@ -191,9 +197,13 @@ public:
   }
 };
 
-/// Raise an value to a power
-constexpr inline Fp pow(Fp x, size_t n) {
-  Fp tot = 1;
+template <
+    /* P **/ uint32_t P,
+    /* M **/ uint32_t M,
+    /* R2 **/ uint32_t R2
+    >
+constexpr inline Fp<P, M, R2> pow(Fp<P, M, R2> x, size_t n) {
+  Fp<P, M, R2> tot = 1;
   while (n != 0) {
     if (n % 2 == 1) {
       tot *= x;
@@ -209,6 +219,11 @@ constexpr inline Fp pow(Fp x, size_t n) {
 /// x^(P-2) == 1 (mod P)` for x != 0.  That is, `x^(P-2)` is the multiplicative inverse of x.
 /// Computed this way, the 'inverse' of zero comes out as zero, which is convient in many cases, so
 /// we leave it.
-constexpr inline Fp inv(Fp x) {
-  return pow(x, Fp::P - 2);
+template <
+    /* P **/ uint32_t P,
+    /* M **/ uint32_t M,
+    /* R2 **/ uint32_t R2
+    >
+constexpr inline Fp<P, M, R2> inv(Fp<P, M, R2> x) {
+  return pow(x, P - 2);
 }
