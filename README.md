@@ -18,6 +18,8 @@ To run the examples, use the following command:
 
 `cargo run --example {example}`
 
+> To run the `memory` example some nightly features are needed so `+nightly` has to be added to the command above.
+
 To re-build all the necessary `.metallib` files, you can use 
 
 `make build_metal EXAMPLE={example}`
