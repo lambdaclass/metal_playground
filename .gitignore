@@ -1,1 +1,4 @@
 target/
+
+# Intermidiate language for metal files
+*.air

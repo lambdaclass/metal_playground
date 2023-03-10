@@ -1,11 +1,11 @@
 // Code extracted from ministark
 
 use ark_std::alloc::Global;
+use once_cell::sync::Lazy;
 use std::alloc::AllocError;
 use std::alloc::Allocator;
 use std::alloc::Layout;
 use std::ptr::NonNull;
-use once_cell::sync::Lazy;
 
 #[cfg(target_arch = "aarch64")]
 pub static PAGE_SIZE: Lazy<usize> =

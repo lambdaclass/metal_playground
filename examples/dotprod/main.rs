@@ -1,7 +1,7 @@
 use metal::{Device, DeviceRef, MTLResourceOptions};
 use metal_playground::utils;
 
-const LIB_DATA: &[u8] = include_bytes!("metal/dot_product.metallib");
+const LIB_DATA: &[u8] = include_bytes!("metal/dotprod.metallib");
 
 pub fn dot(v: [u32; 4], w: [u32; 4]) -> *const [u32; 4] {
     // will return a raw pointer to the result

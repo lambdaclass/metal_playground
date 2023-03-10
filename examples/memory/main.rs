@@ -21,27 +21,25 @@ fn main() {
         )
         .unwrap();
 
-    let mut data = [0_u32; 16].to_vec_in(PageAlignedAllocator);
-    let data_size = (data.len() * core::mem::size_of::<u32>()) as u64;
-
-    let ptr = data.as_mut_ptr();
-    let buffer = device.new_buffer_with_bytes_no_copy( // for some reason this creates a buffer
-                                                       // with a null ptr.
-        ptr as *mut core::ffi::c_void,
-        data_size,
-        MTLResourceOptions::StorageModeShared,
-        None,
-    );
+    // The shared vec size must be 1024 or 2048 for this to work
+    let data = &mut vec![0_u32; 1024].to_vec_in(PageAlignedAllocator);
+    let data_size = data.capacity() * core::mem::size_of::<u32>();
 
     let command_queue = device.new_command_queue();
     let command_buffer = command_queue.new_command_buffer();
     let compute_encoder = command_buffer.new_compute_command_encoder();
     compute_encoder.set_compute_pipeline_state(&pipeline);
-    compute_encoder.set_buffer(0, Some(&buffer), 0); // code panics here, the first call which
-                                                     // takes buffer as arg.
 
+    // for some reason this creates a buffer with a null ptr.
+    let buffer = device.new_buffer_with_bytes_no_copy(
+        data.as_mut_ptr() as *mut core::ffi::c_void,
+        data_size.try_into().unwrap(),
+        metal::MTLResourceOptions::StorageModeShared,
+        None,
+    );
+
+    compute_encoder.set_buffer(0, Some(&buffer), 0);
     compute_encoder.use_resource(&buffer, MTLResourceUsage::Write);
-
     let grid_size = metal::MTLSize::new(data.len() as u64, 1, 1);
     let threadgroup_size = metal::MTLSize::new(data.len() as u64, 1, 1);
 
@@ -52,7 +50,10 @@ fn main() {
     command_buffer.wait_until_completed();
 
     unsafe {
-        println!("via contents(): {:?}", *(buffer.contents() as *mut [u32; 16]));
+        println!(
+            "via contents(): {:?}",
+            *(buffer.contents() as *mut [u32; 10])
+        );
     }
-    println!("rust vector: {:?}", data);
+    println!("rust vector: {:?}", data[0..10].to_vec());
 }

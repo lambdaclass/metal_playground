@@ -10,12 +10,11 @@ struct MetalState<'a> {
     pub pipeline: metal::ComputePipelineState,
 }
 
-const LIB_DATA: &[u8] = include_bytes!("metal/matrix_multiplication.metallib");
+const LIB_DATA: &[u8] = include_bytes!("metal/matrixprod.metallib");
 
 /// Parallel computation of a matrix multiplication.
 /// Only admits square matrices.
-fn prod<T: Copy>(ma: &Matrix<T>, mb: &Matrix<T>, state: MetalState) -> *mut std::ffi::c_void
-{
+fn prod<T: Copy>(ma: &Matrix<T>, mb: &Matrix<T>, state: MetalState) -> *mut std::ffi::c_void {
     assert!(ma.is_square());
     assert!(mb.is_square());
     assert_eq!(ma.rows, mb.rows);
@@ -72,13 +71,17 @@ fn main() {
         .new_compute_pipeline_state_with_function(&function)
         .unwrap();
 
-    let state = MetalState { device, queue, pipeline };
+    let state = MetalState {
+        device,
+        queue,
+        pipeline,
+    };
 
     let matrix_a = Matrix::new(4, 4, &[1.0; 16]);
     let matrix_b = Matrix::new(4, 4, &[2.0; 16]);
 
     let result = prod(&matrix_a, &matrix_b, state) as *const [f32; 16];
-    
+
     unsafe {
         println!("{:?}", *result);
     };
