@@ -1,5 +1,5 @@
 #![feature(allocator_api)]
-use metal::{ComputePipelineDescriptor, Device, DeviceRef, MTLResourceOptions, MTLResourceUsage};
+use metal::{ComputePipelineDescriptor, Device, DeviceRef, MTLResourceUsage};
 
 use crate::alloc::PageAlignedAllocator;
 
@@ -30,7 +30,6 @@ fn main() {
     let compute_encoder = command_buffer.new_compute_command_encoder();
     compute_encoder.set_compute_pipeline_state(&pipeline);
 
-    // for some reason this creates a buffer with a null ptr.
     let buffer = device.new_buffer_with_bytes_no_copy(
         data.as_mut_ptr() as *mut core::ffi::c_void,
         data_size.try_into().unwrap(),
