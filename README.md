@@ -14,11 +14,13 @@ The source code will contain documented examples of use, growing in complexity, 
 - [XCode](https://www.freecodecamp.org/news/how-to-download-and-install-xcode/)
 - [Rust](https://www.rust-lang.org/es/tools/install)
 
+## Running the examples
+
 To run the examples, use the following command: 
 
-`cargo run --example {example}`
+`make example EXAMPLE={example}`
 
-> To run the `memory` example some nightly features are needed so `+nightly` has to be added to the command above.
+> For the `memory` example some nightly features are needed so `+nightly` has to be added to the command above.
 
 To re-build all the necessary `.metallib` files, you can use 
 
