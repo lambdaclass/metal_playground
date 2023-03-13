@@ -24,7 +24,7 @@ To run the examples, use the following command:
 
 To re-build all the necessary `.metallib` files, you can use 
 
-`make build_metal EXAMPLE={example}`
+`make compile_metal EXAMPLE={example}`
 
 where `{example}` is the name of the example to run in both commands.
 
