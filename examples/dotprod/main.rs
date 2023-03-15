@@ -1,9 +1,11 @@
+use core::slice;
+use std::mem;
+
 use metal::{Device, DeviceRef, MTLResourceOptions};
-use metal_playground::utils;
 
 const LIB_DATA: &[u8] = include_bytes!("metal/dotprod.metallib");
 
-pub fn dot(v: [u32; 4], w: [u32; 4]) -> *const [u32; 4] {
+pub fn dot(v: &[u32], w: &[u32]) -> Vec<u32> {
     // will return a raw pointer to the result
     // the system will assign a GPU to use.
     let device: &DeviceRef = &Device::system_default().expect("No device found");
@@ -13,22 +15,21 @@ pub fn dot(v: [u32; 4], w: [u32; 4]) -> *const [u32; 4] {
     // create function pipeline.
     // this compiles the function, so a pipline can't be created in performance sensitive code.
     let function = lib.get_function("dot_product", None).unwrap();
-    let pipeline = lib
-        .device()
+    let pipeline = device
         .new_compute_pipeline_state_with_function(&function)
         .unwrap();
 
     let length = v.len() as u64;
-    let size = length * core::mem::size_of::<i32>() as u64;
+    let size = length * core::mem::size_of::<u32>() as u64;
     assert_eq!(v.len(), w.len());
 
     let buffer_a = device.new_buffer_with_data(
-        utils::void_ptr(&v),
+        unsafe { mem::transmute(v.as_ptr()) },
         size,
         MTLResourceOptions::StorageModeShared,
     );
     let buffer_b = device.new_buffer_with_data(
-        utils::void_ptr(&w),
+        unsafe { mem::transmute(w.as_ptr()) },
         size,
         MTLResourceOptions::StorageModeShared,
     );
@@ -61,10 +62,13 @@ pub fn dot(v: [u32; 4], w: [u32; 4]) -> *const [u32; 4] {
 
     command_buffer.wait_until_completed();
 
-    utils::deref_void_ptr(buffer_result.contents())
+    let ptr = buffer_result.contents() as *const u32;
+    let len = buffer_result.length() as usize / mem::size_of::<u32>();
+    let slice = unsafe { slice::from_raw_parts(ptr, len) };
+    slice.to_vec()
 }
 
 fn main() {
-    let result = dot([3_u32, 4, 1, 7], [2_u32, 5, 6, 9]);
-    unsafe { println!("{:?}", *result) }
+    let result = dot(&[3, 4, 1, 7, 10, 20], &[2, 5, 6, 9, 5, 10]);
+    println!("{:?}", result);
 }
