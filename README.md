@@ -7,7 +7,7 @@ The source code will contain documented examples of use, growing in complexity, 
 ### Contents
 1. **dotprod**: learn the basics of Metal and metal-rs, implement a simple dot product between two vectors represented as uint arrays.
 2. **matrixprod**: a more complex example to learn about grid size and thread groups, implement a product between square matrices.
-3. **memory**: example to show how to shared memory between CPU and GPU. This example simply creates a vector to be modified from the GPU.
+3. **memory**: example to show how to shared memory between CPU and GPU. This example creates a vector to be modified from the GPU.
 
 ## Pre-requisites
 
@@ -19,8 +19,6 @@ The source code will contain documented examples of use, growing in complexity, 
 To run the examples, use the following command: 
 
 `make example EXAMPLE={example}`
-
-> For the `memory` example some nightly features are needed so `+nightly` has to be added to the command above.
 
 To re-build all the necessary `.metallib` files, you can use 
 

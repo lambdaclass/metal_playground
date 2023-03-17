@@ -1,4 +1,5 @@
-kernel void dot_product(
+[[kernel]]
+void dot_product(
   constant uint *inA [[buffer(0)]],
   constant uint *inB [[buffer(1)]],
   device uint *result [[buffer(2)]],
